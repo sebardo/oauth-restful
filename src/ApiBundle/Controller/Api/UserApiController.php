@@ -14,24 +14,27 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class UserApiController extends FOSRestController
 {
   /**
-   * @Rest\Get("/user/{user}", name="api.user")
+   * @Rest\Get("/users", name="get_users")
    */
-  public function getUserAction(Actor $user)
+  public function getUsersAction()
   {
       
-    $token = $this->get('fos_oauth_server.access_token_manager')->findTokenByToken($this->get('security.token_storage')->getToken()->getToken());
+//    $token = $this->get('fos_oauth_server.access_token_manager')->findTokenByToken($this->get('security.token_storage')->getToken()->getToken());
+//
+//    if(!$token instanceof AccessToken){
+//      throw new AccessDeniedException();
+//    }
 
-    if(!$token instanceof AccessToken){
-      throw new AccessDeniedException();
-    }
+    $data = array(
+        array('id' => 1, 'email' => 'email1@email.com', 'name' => 'user1'),
+        array('id' => 2, 'email' => 'email2@email.com', 'name' => 'user2'),
+    );
+    $view = $this->view($data, 200)
+//        ->setTemplate("ApiBundle:Users:getUsers.html.twig")
+//        ->setTemplateVar('users')
+    ;
 
-     if ($user instanceof Actor) {
-        $userInfo['username'] = $user->getUsername();
-        $userInfo['email'] = $user->getEmail();
-        $userInfo['id'] = $user->getId();
-    }
-
-    return new JsonResponse($userInfo);
+    return $this->handleView($view);
 
   }
   
