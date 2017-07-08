@@ -34,8 +34,8 @@ class DefaultControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/api/users/new', $data);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $return = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         
         $this->assertEquals('success', $return['status']);
         

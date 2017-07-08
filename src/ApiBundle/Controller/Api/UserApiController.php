@@ -51,18 +51,9 @@ class UserApiController extends FOSRestController
         $this->processForm($request, $form);
 
         if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);
-
-            $view = $this->view(array('status' => 'success', 'error' => $errors), 400);
-            return $this->handleView($view);
-
+            return $this->createValidationErrorResponse($form);
         }else{
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
-            
-            $view = $this->view(array('status' => 'success'), 200);
-            return $this->handleView($view);
+            return $this->saveAndReturnResponse($user);
         }
         
         $view = $this->view($form, 200);
@@ -91,5 +82,23 @@ class UserApiController extends FOSRestController
             }
         }
         return $errors;
+    }
+    
+    private function createValidationErrorResponse(FormInterface $form)
+    {
+        $errors = $this->getErrorsFromForm($form);
+
+        $view = $this->view(array('status' => 'success', 'error' => $errors), 400);
+        return $this->handleView($view);
+    }
+    
+    private function saveAndReturnResponse($user)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        $view = $this->view(array('status' => 'success'), 200);
+        return $this->handleView($view);
     }
 }
