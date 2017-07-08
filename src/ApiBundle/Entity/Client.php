@@ -1,13 +1,13 @@
 <?php
 namespace ApiBundle\Entity;
 
-use FOS\OAuthServerBundle\Entity\Client as BaseClient;
+//use FOS\OAuthServerBundle\Entity\Client as BaseClient;
 use Doctrine\ORM\Mapping as ORM;
-
+// extends BaseClient
 /**
  * @ORM\Entity
  */
-class Client extends BaseClient
+class Client
 {
     /**
      * @ORM\Id

@@ -75,7 +75,7 @@ sensio_framework_extra:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
-    user_class: AppBundle\Entity\Actor
+    user_class: ApiBundle\Entity\Actor
     from_email:
         address: you@example.com
         sender_name: You

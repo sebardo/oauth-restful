@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="baseactor");
@@ -39,11 +40,13 @@ abstract class BaseActor implements UserInterface, EquatableInterface , \Seriali
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank(message="Please enter your password")
      */
     protected $password;
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
+     *  @Assert\NotBlank(message="Please enter your username")
      */
     protected $email;
 
@@ -85,7 +88,7 @@ abstract class BaseActor implements UserInterface, EquatableInterface , \Seriali
     protected $instagram_id;
 
     /** @ORM\Column(name="instagram_access_token", type="string", length=255, nullable=true) */
-    protected $instragram_access_token;
+    protected $instagram_access_token;
     
     public function __construct()
     {

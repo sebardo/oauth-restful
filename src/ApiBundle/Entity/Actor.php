@@ -29,7 +29,6 @@ class Actor extends BaseActor
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank
      * 
      * @JMS\Expose
      * @JMS\Groups({"Default", "widget"})
