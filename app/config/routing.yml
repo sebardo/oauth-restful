@@ -1,20 +1,15 @@
+core:
+    resource: "@CoreBundle/Resources/config/routing.yml"
+    prefix:   /
+admin:
+    resource: "@AdminBundle/Resources/config/routing.yml"
+    prefix:   /
+
 api:
     resource: "@ApiBundle/Controller/"
     type:     annotation
     prefix:   /
-    
-#login_check:
-#    path:   /oauth/v2/auth/login_check
-#
-#logout:
-#    path:   /oauth/v2/auth/logout
-    
-#app:
-#    resource: "@AppBundle/Controller/"
-#    type:     annotation
 
-
-# testApiBundle
 api_bundle:
     type: rest
     resource: "@ApiBundle/Resources/config/routing.yml"

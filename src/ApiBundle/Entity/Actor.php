@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
+use CoreBundle\Entity\BaseActor;
 
 /**
  * @ORM\Entity(repositoryClass="ApiBundle\Entity\Repository\ActorRepository")
@@ -24,23 +25,6 @@ class Actor extends BaseActor
      * @JMS\Groups({"Default"})
      */
     protected $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     * 
-     * @JMS\Expose
-     * @JMS\Groups({"Default", "widget"})
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="surnames", type="string", length=100, nullable=true)
-     */
-    private $surnames;
 
 
     /**
@@ -62,61 +46,13 @@ class Actor extends BaseActor
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Actor
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set surnames
-     *
-     * @param string $surnames
-     *
-     * @return Actor
-     */
-    public function setSurnames($surnames)
-    {
-        $this->surnames = $surnames;
-
-        return $this;
-    }
-
-    /**
-     * Get surnames
-     *
-     * @return string
-     */
-    public function getSurnames()
-    {
-        return $this->surnames;
-    }
-
-    /**
      * Get full name
      *
      * @return string
      */
     public function getFullName()
     {
-        return $this->name . ' ' . $this->surnames;
+        return $this->name . ' ' . $this->lastname;
     }
 
   
