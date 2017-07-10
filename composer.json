@@ -37,7 +37,8 @@
         "jms/serializer-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "^2.2",
         
-        "sebardo/admin": "dev-master"
+        "sebardo/admin": "dev-master",
+        "friendsofsymfony/oauth-server-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

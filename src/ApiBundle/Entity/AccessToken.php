@@ -2,13 +2,14 @@
 
 namespace ApiBundle\Entity;
 
-//use FOS\OAuthServerBundle\Entity\AccessToken as BaseAccessToken;
+use FOS\OAuthServerBundle\Entity\AccessToken as BaseAccessToken;
 use Doctrine\ORM\Mapping as ORM;
-//extends BaseAccessToken
+
 /**
  * @ORM\Entity
+ * @ORM\Table(name="access_token");
  */
-class AccessToken 
+class AccessToken extends BaseAccessToken
 {
     /**
      * @ORM\Id

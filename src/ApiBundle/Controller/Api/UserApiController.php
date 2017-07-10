@@ -22,6 +22,11 @@ class UserApiController extends FOSRestController
   public function getUsersAction()
   {
       
+    # this is it
+    if (false === $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        throw new AccessDeniedException();
+    }
+
 //    $token = $this->get('fos_oauth_server.access_token_manager')->findTokenByToken($this->get('security.token_storage')->getToken()->getToken());
 //
 //    if(!$token instanceof AccessToken){
@@ -45,6 +50,10 @@ class UserApiController extends FOSRestController
     */
    public function newAction(Request $request)
    {
+        if (false === $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw new AccessDeniedException();
+        }
+
         $user = new Actor();
         $form = $this->createForm(ActorType::class, $user);
 

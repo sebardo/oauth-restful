@@ -2,13 +2,14 @@
 
 namespace ApiBundle\Entity;
 
-//use FOS\OAuthServerBundle\Entity\AuthCode as BaseAuthCode;
+use FOS\OAuthServerBundle\Entity\AuthCode as BaseAuthCode;
 use Doctrine\ORM\Mapping as ORM;
-//extends BaseAuthCode
+
 /**
  * @ORM\Entity
+ * @ORM\Table(name="auth_code");
  */
-class AuthCode 
+class AuthCode extends BaseAuthCode
 {
     /**
      * @ORM\Id

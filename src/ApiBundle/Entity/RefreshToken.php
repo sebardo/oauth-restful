@@ -2,13 +2,14 @@
 
 namespace ApiBundle\Entity;
 
-//use FOS\OAuthServerBundle\Entity\RefreshToken as BaseRefreshToken;
+use FOS\OAuthServerBundle\Entity\RefreshToken as BaseRefreshToken;
 use Doctrine\ORM\Mapping as ORM;
-//extends BaseRefreshToken
+
 /**
  * @ORM\Entity
+ * @ORM\Table(name="refresh_token");
  */
-class RefreshToken 
+class RefreshToken extends BaseRefreshToken
 {
     /**
      * @ORM\Id
