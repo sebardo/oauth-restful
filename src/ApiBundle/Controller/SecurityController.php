@@ -13,15 +13,6 @@ class SecurityController extends Controller
 {
  
     /**
-     * @Route("/" , name="index")
-     * @Template()
-     */
-    public function indexAction(Request $request)
-    {
-        return array();
-    }
-    
-    /**
      * @Route("/oauth/v2/auth/login" , name="login")
      * @Template("ApiBundle:Security:login.html.twig")
      */
