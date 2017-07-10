@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: services.yml }
-    - { resource: "security.yml" }
+    - { resource: "@ApiBundle/Resources/config/security.yml" }
     - { resource: "@CoreBundle/Resources/config/services.yml" }
     - { resource: "@AdminBundle/Resources/config/services.yml" }
 

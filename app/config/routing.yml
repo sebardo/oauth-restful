@@ -7,26 +7,6 @@ admin:
     prefix:   /
 
 api:
-    resource: "@ApiBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
-api_bundle:
-    type: rest
     resource: "@ApiBundle/Resources/config/routing.yml"
     prefix:   /
-    defaults: {_format: json}
-    
-#oauth
-fos_oauth_server_token:
-    resource: "@FOSOAuthServerBundle/Resources/config/routing/token.xml"
-
-fos_oauth_server_authorize:
-    resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
-    
-login_check:
-    path:   /oauth/v2/auth/login_check
-
-logout:
-    path:   /oauth/v2/auth/logout
     

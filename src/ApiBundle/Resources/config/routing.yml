@@ -1,11 +1,26 @@
 # FOSAuthServerBundle
-#fos_oauth_server_token:
-#    resource: "@FOSOAuthServerBundle/Resources/config/routing/token.xml"
-#
-#fos_oauth_server_authorize:
-#    resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
+fos_oauth_server_token:
+    resource: "@FOSOAuthServerBundle/Resources/config/routing/token.xml"
+
+fos_oauth_server_authorize:
+    resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
     
-app_api:
-    resource: "@ApiBundle/Controller/Api"
+#oauth  
+oauth:
+    resource: "@ApiBundle/Controller/"
     type:     annotation
+    prefix:   /
+    
+login_check:
+    path:   /oauth/v2/auth/login_check
+
+logout:
+    path:   /oauth/v2/auth/logout
+
+#restful
+restful:
+    type: rest
+    resource: "@ApiBundle/Controller/Api"
     prefix:   /api
+    defaults: {_format: json}
+    
