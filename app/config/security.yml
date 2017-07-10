@@ -12,6 +12,64 @@ security:
             entity: { class: CoreBundle:BaseActor }
 
     firewalls:
+        admin:
+            http_basic: ~
+            anonymous: ~
+            pattern:    ^/admin/.*
+            form_login:
+                provider: main
+                login_path:  /admin/login
+                check_path:  /admin/login_check
+                use_referer: true
+                success_handler: authentication_handler
+                failure_handler: authentication_handler
+                default_target_path: /admin
+            logout:
+                path: admin_logout   
+                target: /admin/login
+            switch_user:
+                role: ROLE_ADMIN
+            context: website
+        company:
+            http_basic: ~
+            anonymous: ~
+            pattern:    ^/company/.*
+            form_login:
+                provider: main
+                login_path:  /company/login
+                check_path:  /company/login_check
+                use_referer: true
+                success_handler: authentication_handler
+                failure_handler: authentication_handler
+                default_target_path: /company
+            logout:
+                path: company_logout
+                target: /company/login
+            switch_user:
+                role: ROLE_ADMIN
+                provider: main
+            context: website
+#        user:
+#            http_basic: ~
+#            anonymous: ~
+#            context: test_connect
+#            pattern:    ^/
+#            form_login:
+#                login_path:  /login
+#                check_path:  /login_check
+#                use_referer: true
+#                success_handler: authentication_handler
+#                failure_handler: authentication_handler
+#            logout:
+#                path:   /logout
+#                target: /
+##                success_handler: authentication_handler
+#            anonymous: true
+#            remember_me:
+#                secret:      "%secret%"
+#                lifetime: 31536000 # 365 days in seconds
+#                path:     /
+#                domain:   ~ # Defaults to the current domain from $_SERVER
         #oauth server
         oauth_token:
             pattern:    ^/oauth/v2/token
@@ -21,8 +79,8 @@ security:
             pattern:    ^/oauth/v2/auth
             form_login:
                 provider: main
-                check_path: login_check
-                login_path: login
+                check_path: /oauth/v2/auth/login_check
+                login_path: /oauth/v2/auth/login
             anonymous: true
             context: test_connect
         api:
