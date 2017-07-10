@@ -13,7 +13,7 @@ class SecurityController extends Controller
 {
  
     /**
-     * @Route("/oauth/v2/auth/login" , name="login")
+     * @Route("/oauth/v2/auth/login" , name="oauth_login")
      * @Template("ApiBundle:Security:login.html.twig")
      */
     public function loginAction(Request $request)
