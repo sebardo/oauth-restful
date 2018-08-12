@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.rawgit.com/konvajs/konva/2.1.7/konva.min.js"></script>
+  <meta charset="utf-8">
+  <title>Konva Shape Layering Demo</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #fff;
+    } 
+    #stage-parent {
+        width: 100% auto; 
+        max-width: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div style="align-content: center;width: 100% auto; ">
+    <div id="stage-parent">
+        <div id="container" style="background-color: #ccc"></div>
+    </div>
+  </div>
+  
+   
+  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-auth.js"></script> 
+  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-functions.js"></script>
+  <script>
+      
+    schema_name = 'schema_003';
+    var window_width = 500;
+    var window_height = 400; 
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDNU_4Baon-CMNAA4uX7nFUtGCtxlYVGr8",
+      authDomain: "reservation-seats.firebaseapp.com",
+      databaseURL: "https://reservation-seats.firebaseio.com",
+      projectId: "reservation-seats",
+      storageBucket: "",
+      messagingSenderId: "653028294113"
+    };
+    firebase.initializeApp(config);
+    var database = firebase.database();
+    
+    konvasShapes = [];
+    konvasTooltips = [];
+    var contains = function(needle) {
+        // Per spec, the way to identify NaN is that it is not equal to itself
+        var findNaN = needle !== needle;
+        var indexOf;
+        if(!findNaN && typeof Array.prototype.indexOf === 'function') {
+            indexOf = Array.prototype.indexOf;
+        } else {
+            indexOf = function(needle) {
+                var i = -1, index = -1;
+                for(i = 0; i < this.length; i++) {
+                    var item = this[i];
+                    if((findNaN && item !== item) || item === needle) {
+                        index = i;
+                        break;
+                    }
+                }
+                return index;
+            };
+        }
+        return indexOf.call(this, needle) > -1;
+    };
+    
+    function createStage(){
+        var width = window_width;
+        var height = window_height;
+        var stage = new Konva.Stage({
+            container: 'container',
+            width: width,
+            height: height
+        });
+        return stage;
+    }
+    
+    function getNodeFromGroup(group, shapes){
+        var groups = {};
+        for (var item in shapes) {
+            var g = shapes[item]['group'];
+            if(group ==  g){
+                Object.defineProperty(groups, item, {value : shapes[item],
+                    writable : true,
+                    enumerable : true,
+                    configurable : true});
+            }
+        }
+        return groups;
+    }
+
+    function getGroups(shapes){
+        var groups = new Array();
+        for (var item in shapes) {
+            var g = shapes[item]['group'];
+            if(!contains.call(groups, g)){
+                groups.push(g);
+            }
+        }
+        var groupsObj = {};
+        for (var item in groups) {
+           var g = groups[item];
+           Object.defineProperty(groupsObj, g, {value : getNodeFromGroup(g, shapes),
+                writable : true,
+                enumerable : true,
+                configurable : true});
+        }
+        return groupsObj;
+    }
+ 
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+    
+    function createTable(shapes, x , y, stage){
+        var groupType = getType(shapes);
+        console.log(groupType);
+        var length = Object.size(shapes);
+        var positions = getPositions(length, groupType);
+        
+        var group = new Konva.Group({
+            draggable: true,
+            x: x,
+            y: y,
+            //rotation: 20
+        });
+        var i = 0;
+        for (var item in shapes) {
+            // anonymous function to induce scope
+            (function() {
+                var color = shapes[item].color;
+                //set innit background color reserved
+                if(shapes[item].status =='reserved'){
+                    var color = 'grey';
+                }
+                var shape = createNode(item, color, positions[i], stage);
+                var tooltip = createTooltip(shape, item, stage);
+                //reserve seats on firebase
+                shape.on('click', function() { reserve(shape, shapes[shape.name()]);});
+                ////reserve seats on firebase
+                shape.on('tap', function() {  reserve(shape, shapes[shape.name()]); });
+                shape.on('mouseover', function() { document.body.style.cursor = 'pointer'; });
+                shape.on('mouseout', function() { document.body.style.cursor = 'default'; });
+                group.add(shape);
+                konvasShapes[item] = shape;
+                konvasTooltips[item] = tooltip;
+            })();
+            var i = i + 1;
+        }
+
+        return group;
+        
+     }
+    
+    function createNode(name, color, positions, stage){
+        
+        var shape = new Konva.Circle({
+            x: positions.x,
+            y: positions.y,
+            radius: 20,
+            fill: color,
+            stroke: 'black',
+            strokeWidth: 1,
+            name: name
+          });
+        
+        return shape;
+    }
+    
+    function createTooltip(shape, name, stage){
+        
+        var container = document.querySelector('#stage-parent');
+        // now we need to fit stage into parent
+        var containerWidth = container.offsetWidth;
+        // to do this we need to scale the stage
+        var scale = containerWidth / window_width;
+
+        var tooltipLayer = new Konva.Layer();
+        shape.on("mousemove", function(){
+            var mousePos = stage.getPointerPosition() ;
+            tooltip.position({
+                x : (mousePos.x / scale) + 5 ,
+                y : (mousePos.y / scale) + 5 
+            });
+            tooltip.text(name);
+            tooltip.show();
+            tooltipLayer.batchDraw();
+        });
+
+        shape.on("mouseout", function(){
+            tooltip.hide();
+            tooltipLayer.draw();
+        });
+        
+        var tooltip = new Konva.Text({
+            text: "",
+            fontFamily: "Calibri",
+            fontSize: 15,
+            padding: 5,
+            textFill: "white",
+            fill: "black",
+            alpha: 0.75,
+            visible: false
+        });
+
+
+        tooltipLayer.add(tooltip);
+        return tooltipLayer;
+    }
+    
+    function updateNode(shape){
+        new Konva.Tween({
+                node: shape, 
+                duration: 0.5,
+                easing: Konva.Easings.EaseInOut
+            }).play();
+    }
+    
+    function reserveListener(snapshot, shapes) {  
+        var values = snapshot.val();
+        for (var item in snapshot.val()) {
+            //here fix
+            if(values[item].status == 'reserved'){
+                var shape = shapes[item];
+                if(shape.fill() != 'grey'){
+                    shape.fill('grey');
+                    updateNode(shape);
+                }
+            }else if(values[item].status == 'free'){
+                var shape = shapes[item];
+                if(shape.fill() != item){
+                    shape.fill(values[item].color);
+                    updateNode(shape)
+                }
+            }
+        }
+    }
+    
+    function reserve(shape, item) {
+        var status = 'free';
+        if(shape.fill() == 'grey'){
+            shape.fill(item.color);
+            updateNode(shape)
+        }else{
+            var status = 'reserved';
+            shape.fill('grey');
+            updateNode(shape)
+        }
+        item.status = status;
+        firebase.database().ref('/schemas/'+schema_name+'/'+shape.name()).set(item); 
+    }
+    
+    // Will remove all falsy values: undefined, null, 0, false, NaN and "" (empty string)
+    function cleanArray(actual) {
+      var newArray = new Array();
+      for (var i = 0; i < actual.length; i++) {
+        if (actual[i]) {
+          newArray.push(actual[i]);
+        }
+      }
+      return newArray;
+    }
+
+
+
+    function getPositionRect(quantity){
+        positions = [];
+        var sides = 2;
+        var x = 0;
+        var y = -30;
+        var w = 100;
+        var h = 60;
+        var rest = parseInt(quantity)/sides;
+        var w = 40 * rest;
+        var divisor = parseInt(w)/(parseInt(rest)-1);
+        var initY = y;
+        var  n = 0;
+        for (var i = 1; i <= sides; i++) {
+             var newX = x;
+            for (var ii = 1; ii <= rest; ii++) {
+                if(ii > 1 ){
+                    newX = newX+divisor;
+                }
+                positions[n] = [];
+                positions[n]['x'] = newX;
+                positions[n]['y'] = initY;
+                n = n + 1;
+            }
+            var initY = initY + h;
+        }
+        return positions;
+    }
+    
+    function getPositionCircle(quantity){
+        var step = 2*Math.PI/quantity;  // see note 1
+        var h = 0; 
+        var k = 0;
+        var r = 40;
+
+        positions = [];
+        var n = 0;
+        for(var theta=0;  theta < 2*Math.PI;  theta+=step)
+        { 
+            positions.push({ x: h + r*Math.cos(theta), y: k - r*Math.sin(theta)}); 
+            n = n + 1;
+        }
+        return positions;
+    }
+    
+    function getPositions(quantity, groupType){
+        if(groupType == 'rect'){
+            var positions = getPositionRect(quantity);
+        }else{
+            var positions = getPositionCircle(quantity)
+        }
+        console.log(positions);
+        return positions;
+    }
+    
+   function getType(group){
+       for (var key in group) {
+            var g = group[key].type;
+            return g;
+       }
+       
+   }
+    //get all shapes from firebase    
+    firebase.database().ref('/schemas/'+schema_name).once('value').then(function(snapshot) {
+        var shapes_json = snapshot.val();
+        var groups = getGroups(shapes_json);
+        var stage =  createStage();
+        var layer = new Konva.Layer();
+        
+        var x = stage.width() - 425;
+        var y = stage.height() - 325;
+        var n = 1;
+        for (var key in groups) {
+            var table = createTable(groups[key], x, y, stage);
+            layer.add(table);
+            
+            var x = x + 100;
+            if(n % 2 == 0) {
+                var y = y + 120;
+                var x = 75;
+            }
+            
+            n = n + 1 ;
+        }
+        
+        stage.add(layer);
+        //toopltips
+        for (var item in konvasTooltips) {
+            var tooltipLayer = konvasTooltips[item];
+            stage.add(tooltipLayer);
+        }
+        
+        //add listener
+        firebase.database().ref('/schemas/'+schema_name).on('value', function(snapshot) {
+          reserveListener(snapshot, konvasShapes);
+        });
+        
+        function fitStageIntoParentContainer() {
+            var container = document.querySelector('#stage-parent');
+
+            // now we need to fit stage into parent
+            var containerWidth = container.offsetWidth;
+            // to do this we need to scale the stage
+            var scale = containerWidth / window_width;
+
+
+            stage.width(window_width * scale);
+            stage.height(window_height * scale);
+            stage.scale({ x: scale, y: scale });
+            stage.draw();
+        }
+
+        fitStageIntoParentContainer();
+        // adapt the stage on any window resize
+        window.addEventListener('resize', fitStageIntoParentContainer);
+        
+    });
+   
+  </script>
+  <script type="text/javascript" src="/js/946364b_jquery-1.11.1.min_1.js"></script>
+  <div >
+      <div>
+          Reserve Seat <input type="text" name="seat" id="seat"><input id="submit" type="button" value="Reserve or Free"> <span class="loading" style="display: none">Loading ...</span>
+      </div>
+      <script>
+          $(document).ready(function(){
+              $('#submit').click(function(){
+                    var seat = $('#seat').val();
+                    $('.loading').fadeIn('slow');
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ path('realtime_index') }}",
+                        data: { seat: seat }
+                    })
+                    .done(function( msg ) {
+                        $('.loading').fadeOut('slow');
+                      //alert( "Seat reserved: " + seat );
+                    });
+              })
+          });
+      </script>
+  </div>
+</body>
+</html>

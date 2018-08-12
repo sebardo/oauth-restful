@@ -17,20 +17,21 @@ class RealtimeController extends Controller
     {
         $firebase = $this->get('kreait_firebase.first');
         $db = $firebase->getDatabase();
-        $schema = $db->getReference('schemas/schema_002')->getValue();
+        $schema = 'schema_003';
+        $ref = $db->getReference('schemas/'.$schema)->getValue();
  
         
         if($request->getMethod() == 'POST'){
             //check if exist in schema and save
-            if(isset($schema[$request->request->get('seat')])) {
-                if($schema[$request->request->get('seat')]['status'] == 'free'){
-                    $db->getReference('schemas/schema_002/'.$request->request->get('seat').'/status')->set('reserved');
+            if(isset($ref[$request->request->get('seat')])) {
+                if($ref[$request->request->get('seat')]['status'] == 'free'){
+                    $db->getReference('schemas/'.$schema.'/'.$request->request->get('seat').'/status')->set('reserved');
                 }else{
-                    $db->getReference('schemas/schema_002/'.$request->request->get('seat').'/status')->set('free');
+                    $db->getReference('schemas/'.$schema.'/'.$request->request->get('seat').'/status')->set('free');
                 }
             }
         }
         
-        return array('schemas' => $schema);
+        return array('schemas' => $ref);
     }
 }
