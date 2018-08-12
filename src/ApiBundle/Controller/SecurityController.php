@@ -68,4 +68,5 @@ class SecurityController extends Controller
 
         return new JsonResponse($userInfo);
     }
+
 }

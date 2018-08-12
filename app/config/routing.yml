@@ -1,3 +1,8 @@
+realtime_database:
+    resource: "@RealtimeDatabaseBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 core:
     resource: "@CoreBundle/Resources/config/routing.yml"
     prefix:   /

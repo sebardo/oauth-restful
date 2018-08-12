@@ -32,6 +32,9 @@ class AppKernel extends Kernel
             new CoreBundle\CoreBundle(),
             new AdminBundle\AdminBundle(),
             new ApiBundle\ApiBundle(),
+            //firebase
+            new Kreait\Firebase\Symfony\Bundle\FirebaseBundle(),
+            new RealtimeDatabaseBundle\RealtimeDatabaseBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

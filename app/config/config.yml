@@ -89,7 +89,7 @@ swiftmailer:
 sensio_framework_extra:
     view:
         annotations: true
-
+#a:1:{i:0;s:18:"authorization_code";}
 fos_rest:
     param_fetcher_listener: true
     body_listener: true
@@ -240,3 +240,29 @@ dcs_dynamic_discriminator_map:
             entity: CoreBundle\Entity\BaseActor
             map:
                 Actor: ApiBundle\Entity\Actor
+
+# app/config/config.yml (Symfony without Flex)
+# config/packages/firebase.yaml (Symfony with Flex)
+kreait_firebase:
+    projects:
+        # You can access your firebase project with
+        # $container->get('kreait_firebase.first')
+        first:
+            # Optional: If set to false, the service and its alias
+            # can only be used via dependency injection
+            public: true
+            # Optional: If set to true, this project is used when
+            # using Kreait\Firebase as a type hint for dependency injection
+            default: true
+            # Optional: Path to the projects Service Account credentials file
+            # If omitted, the library will try to discover it.
+            credentials: '%kernel.project_dir%/app/config/service_account_credentials.json'
+            # You can find the database URI at 
+            # https://console.firebase.google.com/project/first/database/data
+            database_uri: 'https://reservation-seats.firebaseio.com'
+            # Optional: If set, you can access your project with
+            # $container->get('firebase') 
+            alias: 'reservation-seats'
+        second: # $container->get('kreait_firebase.second')
+            database_uri: 'https://second.firebaseio.com'
+        third: # $container->get('kreait_firebase.third')
